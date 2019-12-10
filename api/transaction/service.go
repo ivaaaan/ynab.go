@@ -13,7 +13,7 @@ import (
 )
 
 // ServerKnowledge type for delta requests
-type ServerKnowledge int64
+type ServerKnowledge int
 
 // NewService facilitates the creation of a new transaction service instance
 func NewService(c api.ClientReaderWriter) *Service {
@@ -298,7 +298,7 @@ func (s *Service) GetScheduledTransaction(budgetID, scheduledTransactionID strin
 
 // Filter represents the optional filter while fetching transactions
 type Filter struct {
-	LastKnowledge int
+	LastKnowledge ServerKnowledge
 	Since         *api.Date
 	Type          *Status
 }
