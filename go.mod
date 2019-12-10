@@ -9,5 +9,3 @@ require (
 )
 
 go 1.13
-
-replace go.bmvs.io/ynab => github.com/ivaaaan/ynab.go v1.3.1
