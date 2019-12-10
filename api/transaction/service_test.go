@@ -218,6 +218,7 @@ func TestService_GetTransactionsByAccount(t *testing.T) {
 	httpmock.RegisterResponder(http.MethodGet, url,
 		func(req *http.Request) (*http.Response, error) {
 			res := httpmock.NewStringResponse(200, `{
+  "server_knowledge": 100,
   "data": {
     "transactions": [
       {
@@ -280,7 +281,7 @@ func TestService_GetTransactionsByAccount(t *testing.T) {
 	expectedSubTransactionPayeeID := "6216ab4b-bb05-4574-b4b5-be2dee26ab0d"
 	expectedSubTransactionCategoryID := "080985e4-4175-43e4-96bb-d207a9d2c8ce"
 
-	expected := []*transaction.Transaction{
+	expectedTransactions := []*transaction.Transaction{
 		{
 			ID:           "e6ad88f5-6f16-4480-9515-5377012750dd",
 			Date:         expectedDate,
@@ -308,7 +309,14 @@ func TestService_GetTransactionsByAccount(t *testing.T) {
 			},
 		},
 	}
-	assert.Equal(t, expected, transactions)
+
+	expected := transaction.TransactionsListModel{
+		ServerKnowledge: 100,
+	}
+
+	expected.Data.Transactions = expectedTransactions
+
+	assert.Equal(t, &expected, transactions)
 }
 
 func TestService_GetTransactionsByCategory(t *testing.T) {
@@ -1224,6 +1232,10 @@ func TestFilter_ToQuery(t *testing.T) {
 		{
 			Input:  transaction.Filter{},
 			Output: "",
+		},
+		{
+			Input:  transaction.Filter{LastKnowledge: 1},
+			Output: "last_knowledge_of_server=1",
 		},
 	}
 

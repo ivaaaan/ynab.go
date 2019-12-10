@@ -6,3 +6,5 @@ require (
 	github.com/stretchr/testify v1.2.2
 	gopkg.in/jarcoal/httpmock.v1 v1.0.0-20180615191036-16f9a43967d6
 )
+
+go 1.13
