@@ -12,6 +12,9 @@ import (
 	"go.bmvs.io/ynab/api"
 )
 
+// ServerKnowledge type for delta requests
+type ServerKnowledge int64
+
 // NewService facilitates the creation of a new transaction service instance
 func NewService(c api.ClientReaderWriter) *Service {
 	return &Service{c}
@@ -20,6 +23,14 @@ func NewService(c api.ClientReaderWriter) *Service {
 // Service wraps YNAB transaction API endpoints
 type Service struct {
 	c api.ClientReaderWriter
+}
+
+// TransactionsListModel represents a struture for GET requests(lists)
+type TransactionsListModel struct {
+	ServerKnowledge ServerKnowledge `json:"server_knowledge"`
+	Data            struct {
+		Transactions []*Transaction `json:"transactions"`
+	} `json:"data"`
 }
 
 // GetTransactions fetches the list of transactions from
@@ -187,13 +198,9 @@ func (s *Service) UpdateTransactions(budgetID string,
 // from a budget with filtering capabilities
 // https://api.youneedabudget.com/v1#/Transactions/getTransactionsByAccount
 func (s *Service) GetTransactionsByAccount(budgetID, accountID string,
-	f *Filter) ([]*Transaction, error) {
+	f *Filter) (*TransactionsListModel, error) {
 
-	resModel := struct {
-		Data struct {
-			Transactions []*Transaction `json:"transactions"`
-		} `json:"data"`
-	}{}
+	var resModel TransactionsListModel
 
 	url := fmt.Sprintf("/budgets/%s/accounts/%s/transactions", budgetID, accountID)
 	if f != nil {
@@ -204,7 +211,7 @@ func (s *Service) GetTransactionsByAccount(budgetID, accountID string,
 		return nil, err
 	}
 
-	return resModel.Data.Transactions, nil
+	return &resModel, nil
 }
 
 // GetTransactionsByCategory fetches the list of transactions of a specific category
@@ -291,8 +298,9 @@ func (s *Service) GetScheduledTransaction(budgetID, scheduledTransactionID strin
 
 // Filter represents the optional filter while fetching transactions
 type Filter struct {
-	Since *api.Date
-	Type  *Status
+	LastKnowledge int
+	Since         *api.Date
+	Type          *Status
 }
 
 // ToQuery returns the filters as a HTTP query string
@@ -304,6 +312,10 @@ func (f *Filter) ToQuery() string {
 	}
 	if f.Type != nil {
 		pairs = append(pairs, fmt.Sprintf("type=%s", string(*f.Type)))
+	}
+
+	if f.LastKnowledge != 0 {
+		pairs = append(pairs, fmt.Sprintf("last_knowledge_of_server=%d", f.LastKnowledge))
 	}
 	return strings.Join(pairs, "&")
 }
