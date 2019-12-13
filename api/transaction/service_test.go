@@ -218,8 +218,8 @@ func TestService_GetTransactionsByAccount(t *testing.T) {
 	httpmock.RegisterResponder(http.MethodGet, url,
 		func(req *http.Request) (*http.Response, error) {
 			res := httpmock.NewStringResponse(200, `{
-  "server_knowledge": 100,
   "data": {
+	"server_knowledge": 1,
     "transactions": [
       {
         "id": "e6ad88f5-6f16-4480-9515-5377012750dd",
@@ -310,11 +310,10 @@ func TestService_GetTransactionsByAccount(t *testing.T) {
 		},
 	}
 
-	expected := transaction.TransactionsListModel{
-		ServerKnowledge: 100,
-	}
+	expected := transaction.TransactionsListModel{}
 
 	expected.Data.Transactions = expectedTransactions
+	expected.Data.ServerKnowledge = 1
 
 	assert.Equal(t, &expected, transactions)
 }

@@ -27,9 +27,9 @@ type Service struct {
 
 // TransactionsListModel represents a struture for GET requests(lists)
 type TransactionsListModel struct {
-	ServerKnowledge ServerKnowledge `json:"server_knowledge"`
-	Data            struct {
-		Transactions []*Transaction `json:"transactions"`
+	Data struct {
+		ServerKnowledge ServerKnowledge `json:"server_knowledge"`
+		Transactions    []*Transaction  `json:"transactions"`
 	} `json:"data"`
 }
 

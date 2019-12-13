@@ -186,6 +186,7 @@ func TestService_GetBudget(t *testing.T) {
 			func(req *http.Request) (*http.Response, error) {
 				res := httpmock.NewStringResponse(200, `{
   "data": {
+    "server_knowledge": 473,
     "budget": {
       "id": "aa248caa-eed7-4575-a990-717386438d2c",
       "name": "Test Budget",
@@ -326,7 +327,6 @@ func TestService_GetBudget(t *testing.T) {
 			],
       "scheduled_subtransactions": []
 		},
-    "server_knowledge": 473
   }
 }
 		`)
